@@ -19,6 +19,16 @@ class User(Base):
         return self.username
 
 # more classes for other tables
+    class File(Base):
+        __tablename__= 'files'
+        id = Column(Integer, primary_key=True)
+        path = Column(String(255),nullabe=False)
+        user_id = Column(Integer)
+
+
+        created_at = Column(DateTime, default=datetime.now)
+
+        
     
 # utility functions
 def open_db():

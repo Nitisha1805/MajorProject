@@ -1,5 +1,7 @@
 from flask import Flask, render_template,redirect,request, flash, session
 from database import User, add_to_db, open_db
+from werkzeug.utils import secure_filename
+from common.files_utils import*
 
 app = Flask(__name__)
 app.secret_key = 'thisissupersecretkeyfornoone'
@@ -33,6 +35,12 @@ def register():
         user = User(username=username, email=email, password=password)
         add_to_db(user)
     return render_template('register.html')
+
+@app.route('/file/upload',method=['GET','POST'])
+def func_name(foo):
+    return render_template('expression')#froute
+
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)
