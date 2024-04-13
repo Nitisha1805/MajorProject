@@ -7,28 +7,7 @@ from sqlalchemy.orm import sessionmaker
 # base model class
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    username = Column(String(50), nullable=False)
-    email = Column(String(64), unique=True)
-    password = Column(String(64))
-    created_at = Column(DateTime, default=datetime.now)
 
-    def __str__(self):
-        return self.username
-
-# more classes for other tables
-    class File(Base):
-        __tablename__= 'files'
-        id = Column(Integer, primary_key=True)
-        path = Column(String(255),nullabe=False)
-        user_id = Column(Integer)
-
-
-        created_at = Column(DateTime, default=datetime.now)
-
-        
     
 # utility functions
 def open_db():

@@ -1,0 +1,28 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col">
+            <h1>Prediction</h1>
+            <p class="lead">Predict the biomarker based on the given data.</p>
+            <form method="POST">
+                {% for column, val in columns %}
+                <div class="mb-3">
+                    <label for="{{ column }}" class="form-label">{{ column }}</label>
+                    <input type="text" class="form-control" id="{{ column }}" name="{{ column }}" value="{{val}}">
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">Predict</button>
+            </form>
+            {% if prediction %}
+            <div class="alert alert-success mt-3" role="alert">
+                <h4 class="alert-heading">Prediction</h4>
+                <p>{{ prediction }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

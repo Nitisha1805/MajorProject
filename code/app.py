@@ -1,44 +1,57 @@
 from flask import Flask, render_template,redirect,request, flash, session
-from database import User, add_to_db, open_db
+from database import add_to_db, open_db
 from werkzeug.utils import secure_filename
-from common.files_utils import*
+from common.files_utils import *
+import pandas as pd
+from joblib import load
 
 app = Flask(__name__)
 app.secret_key = 'thisissupersecretkeyfornoone'
+
+# load model
+def load_model():
+    try:
+        model = load(r'static\models\GaussianNB.jb')
+        return model
+    except Exception as e:
+        print(e)
+        return None
+    
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/prediction', methods=['GET', 'POST'])
+def prediction():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        print("Email =>", email)
-        print("Password =>", password)
-        # logic
-    return render_template('login.html')
+        keys = request.form.keys()
+        values = request.form.values()
+        # create a dataframe
+        df = pd.DataFrame([values], columns=keys)
+        print(df)
+        # load model
+        model = load_model()
+        if model:
+            prediction = model.predict(df)
+            print(prediction)
+            flash('Prediction completed', 'success')
+            return render_template('result.html', prediction=prediction)
+        else:
+            flash('Model not loaded', 'danger')
+            return redirect('/prediction')
+    df = pd.read_csv('data/train.csv', nrows=1)
+    columns = tuple(df.iloc[0].items())
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        cpassword = request.form.get('cpassword')
-        print(username, email, password, cpassword)
-        # logic
-        if len(username) == 0 or len(email) == 0 or len(password) == 0 or len(cpassword) == 0:
-            flash("All fields are required", 'danger')
-            return redirect('/register') # reload the page
-        user = User(username=username, email=email, password=password)
-        add_to_db(user)
-    return render_template('register.html')
+    return render_template('prediction.html', columns = columns)
 
-@app.route('/file/upload',method=['GET','POST'])
-def func_name(foo):
-    return render_template('expression')#froute
+
+@app.route('/dataset/view')
+def view_dataset():
+    file = 'data/train.csv'
+    df = pd.read_csv(file, nrows=100)
+    return render_template('view_dataset.html', data=df.to_html(classes='table table-striped table-hover table-bordered'))
+
 
 
 
